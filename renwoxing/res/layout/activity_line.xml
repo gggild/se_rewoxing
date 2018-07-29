@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lineAcitivity"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    >
+     <TextView
+        android:id="@+id/tv_morning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="上午：" />
+    <TextView
+        android:id="@+id/tv_spot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="" />
+    <TextView
+        android:id="@+id/tv_restaurant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="" />
+    <TextView
+        android:id="@+id/tv_afternoon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="下午：" />
+    <TextView
+        android:id="@+id/tv_restaurant2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="" />
+    <TextView
+        android:id="@+id/tv_hotel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="" />
+    
+   <!-- <Button
+            android:id="@+id/btn_s"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="搜索地址"
+           	android:textStyle="bold"
+            /> -->
+    <ListView
+        android:id="@+id/lv_line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/row_list_line" 
+        android:padding="6dip" >
+    </ListView>
+    
+</LinearLayout>
