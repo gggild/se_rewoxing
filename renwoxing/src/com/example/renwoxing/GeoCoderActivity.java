@@ -1,5 +1,6 @@
 package com.example.renwoxing;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
@@ -60,6 +61,9 @@ OnGetGeoCoderResultListener {
 	GeoCoder mSearch3 = null;
 	GeoCoder mSearch4 = null;
 	GeoCoder mSearch5 = null;
+	
+	ArrayList<GeoCoder> mSearch = new ArrayList<GeoCoder>();		//动态搜索模块数组
+	
 	BaiduMap mBaiduMap = null;
 	MapView mMapView = null;
 	LatLng stLatlng;
@@ -110,6 +114,7 @@ OnGetGeoCoderResultListener {
 		//连接服务器，网关地址
 		String gateway=WifiUtil.getGateWay(this);
 		GlobalParameter.globalUrl="http://"+gateway+":8080/renwoxing";
+		Toast.makeText(getApplicationContext(), "网址：http://"+gateway+":8080/renwoxing",Toast.LENGTH_LONG ).show();
 		try {
 			new LoadData().execute("");
 		} catch (Exception e) {
@@ -268,100 +273,228 @@ class LoadData extends AsyncTask<String, String, String>{
 				Toast.makeText(getApplicationContext(), "连接服务器失败，返回数据为空",Toast.LENGTH_LONG ).show();
 			}
 			*/
+			
+//			Toast.makeText(getApplicationContext(), "准备接受数据",Toast.LENGTH_LONG ).show();
 			if(result != null){
 				try{
-					JSONObject jsonObject2 = JSON.parseObject(result);
 					
-					Map<String, Object> jsmap = jsonObject2.getInnerMap();
-					for(Map.Entry<String, Object> entry : jsmap.entrySet()){
-					//获取json第一层数据，即路线
-					System.out.println("Key = " + entry.getKey());//显示是第几条路线及其总的花费
-					
-					//获取第二层数据，即包含了suggestmodel的map
-					JSONArray spotlist = JSONObject.parseArray(entry.getValue().toString());
-					
-					int days = 1;//遍历suggestmap，如果遇到key等于13的时候，说明天数要加1
-					System.out.println("第" + days + "天:");
-					
-					
-//					System.out.println(spotlist.size());
-					for(int i = 0; i < spotlist.size(); ++i){
-//						System.out.println(spotlist.get(i));
-						//获取第三层数据，即suggestmodel
-						Map<String, Object> suggestMap = (Map<String, Object>) spotlist.get(i);
+					/*=====================================================================================================*/
+					/*=====================================================================================================*/
+					/*=========================================开始解析json数据=============================================*/
+					/*=====================================================================================================*/
+					/*=====================================================================================================*/
 						
-						for(Map.Entry<String, Object> entry2 : suggestMap.entrySet()){
+					Toast.makeText(getApplicationContext(), "数据：" + result,Toast.LENGTH_LONG ).show();
+					
+					
+					
+						
+						
+						JSONObject jsonObject2 = JSON.parseObject(result);
+						Map<String, Object> jsmap = jsonObject2.getInnerMap();
+						
+						/*
+						System.out.println("========================================初始化地图搜索数组==============================================");
+						
+						
+						
+						
+						for(Map.Entry<String, Object> entry : jsmap.entrySet()){
+							//获取json第一层数据，即路线
+							System.out.println("Key = " + entry.getKey());//显示是第几条路线及其总的花费
 							
-//							System.out.println("Key = " + entry2.getKey() + ", Value = " + entry2.getValue());\\
-//							System.out.println("Key = " + entry2.getKey());
+							//获取第二层数据，即包含了suggestmodel的map
+							JSONArray spotlist = JSONObject.parseArray(entry.getValue().toString());
+							
+							int days = 1;//遍历suggestmap，如果遇到key等于13的时候，说明天数要加1
+							System.out.println("第" + days + "天:");
+							System.out.println("上午:");
 							
 							
-							//获取suggest中的各个model数据
-							JSONObject map_3 = JSONObject.parseObject(JSONObject.toJSONString(entry2.getValue()));
-							
-//							System.out.println("hotelModel:"+map_3.get("hotelModel"));
-//							System.out.println("restaurantModel:"+map_3.get("restaurantModel"));
-//							System.out.println("shopModel:"+map_3.get("shopModel"));
-//							System.out.println("spotModel:"+map_3.get("spotModel"));
-							
-							JSONObject map_hotel = JSONObject.parseObject(JSONObject.toJSONString(map_3.get("hotelModel")));
-							JSONObject map_restaurant = JSONObject.parseObject(JSONObject.toJSONString(map_3.get("restaurantModel")));
-							JSONObject map_shop = JSONObject.parseObject(JSONObject.toJSONString(map_3.get("shopModel")));
-							JSONObject map_spot = JSONObject.parseObject(JSONObject.toJSONString(map_3.get("spotModel")));
-							if(map_hotel != null){
-								System.out.println("entertainment_distance:" + map_hotel.get("entertainment_distance"));
-								System.out.println("spot_distance:" + map_hotel.get("spot_distance"));
-								System.out.println("hotelAddress:" + map_hotel.get("hotelAddress"));
-								System.out.println("hotelName:" + map_hotel.get("hotelName"));
-								System.out.println("ave_price:" + map_hotel.get("ave_price"));
-								System.out.println("hotelScore:" + map_hotel.get("hotelScore"));
-								System.out.println("hotelLevel:" + map_hotel.get("hotelLevel"));
-								System.out.println("hotelDescribe:" + map_hotel.get("hotelDescribe"));
-								System.out.println("\n");
-							}
-							if(map_restaurant != null){
-								System.out.println("restaurantScore:" + map_restaurant.get("restaurantScore"));
-								System.out.println("spot_distance:" + map_restaurant.get("spot_distance"));
-								System.out.println("restaurantDescribe:" + map_restaurant.get("restaurantDescribe"));
-								System.out.println("restaurantAddress:" + map_restaurant.get("restaurantAddress"));
-								System.out.println("restaurantName:" + map_restaurant.get("restaurantName"));
-								System.out.println("restaurantType:" + map_restaurant.get("restaurantType"));
-								System.out.println("agr_price:" + map_restaurant.get("agr_price"));
-								System.out.println("\n");
-							}
-							if(map_shop != null){
-								System.out.println("shopScore:" + map_shop.get("shopScore"));
-								System.out.println("shopDescribe:" + map_shop.get("shopDescribe"));
-								System.out.println("shopTime:" + map_shop.get("shopTime"));
-								System.out.println("shopName:" + map_shop.get("shopName"));
-								System.out.println("spot_distance:" + map_shop.get("spot_distance"));
-								System.out.println("shopType:" + map_shop.get("shopType"));
-								System.out.println("\n");
-							}
-							if(map_spot != null){
-								System.out.println("spotSuggestTime:" + map_spot.get("spotSuggestTime"));
-								System.out.println("spotPrice:" + map_spot.get("spotPrice"));
-								System.out.println("spotScore:" + map_spot.get("spotScore"));
-								System.out.println("spotTime:" + map_spot.get("spotTime"));
-								System.out.println("spotDescribe:" + map_spot.get("spotDescribe"));
-								System.out.println("spotName:" + map_spot.get("spotName"));
-								System.out.println("\n");
-							}
+//							System.out.println(spotlist.size());
+							for(int i = 0; i < spotlist.size(); ++i){
+//								System.out.println(spotlist.get(i));
+								//获取第三层数据，即suggestmodel
+								Map<String, Object> suggestMap = (Map<String, Object>) spotlist.get(i);
 								
-//							HotelModel hotel = (HotelModel)map_3.get("hotelModel");
-							if(entry2.getKey().toString() == "13" && i != (spotlist.size() - 1)){
-								//出现13表明今天下午的景点等已经安排完了，天数需要+1
-								days++;
-								System.out.println("第" + days + "天:");
+								for(Map.Entry<String, Object> entry2 : suggestMap.entrySet()){
+									
+//									System.out.println("Key = " + entry2.getKey() + ", Value = " + entry2.getValue());\\
+//									System.out.println("Key = " + entry2.getKey());
+									
+									
+									
+									//获取suggest中的各个model数据
+									JSONObject map_3 = JSONObject.parseObject(JSONObject.toJSONString(entry2.getValue()));
+									
+									JSONObject map_spot = JSONObject.parseObject(JSONObject.toJSONString(map_3.get("spotModel")));
+									if(map_spot != null){
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										GeoCoder temp;
+										mSearch1 = GeoCoder.newInstance();
+										
+
+										mSearch1.setOnGetGeoCodeResultListener(this);
+										
+										mSearch1.geocode(new GeoCodeOption().city("丽江").address(map_restaurant.getString("restaurantName")));
+										
+										
+										
+										
+										
+										
+										System.out.println("spotSuggestTime:" + map_spot.get("spotSuggestTime"));
+										System.out.println("spotPrice:" + map_spot.get("spotPrice"));
+										System.out.println("spotScore:" + map_spot.get("spotScore"));
+										System.out.println("spotTime:" + map_spot.get("spotTime"));
+										System.out.println("spotDescribe:" + map_spot.get("spotDescribe"));
+										System.out.println("spotName:" + map_spot.get("spotName"));
+										System.out.println("\n");
+									}
+										
+////									HotelModel hotel = (HotelModel)map_3.get("hotelModel");
+//									if(entry2.getKey().toString() == "13" && i != (spotlist.size() - 1)){
+//										//出现13表明今天下午的景点等已经安排完了，天数需要+1
+//										days++;
+//										System.out.println("第" + days + "天:");
+//										System.out.println("上午:");
+//									
+//									}else if(entry2.getKey().toString() == "12" && i != (spotlist.size() - 1)){
+//										//出现12表明今天上午的景点等已经安排完了，变成下午的景点
+//										System.out.println("下午:");
+//									}
+									
+								}//for(Map.Entry<String, Object> entry2 : suggestMap.entrySet())
 							
-							}
-						}//for(Map.Entry<String, Object> entry2 : suggestMap.entrySet())
-					
-					System.out.println("\n\n");
+							System.out.println("\n\n");
+							
+								
+							}//for(int i = 0; i < spotlist.size(); ++i)
+						}//for(Map.Entry<String, Object> entry : jsmap.entrySet())
+						
+						
+						*/
+						
+						
+						
+						System.out.println("==================================解析====================================================");
+						
+						for(Map.Entry<String, Object> entry : jsmap.entrySet()){
+							//获取json第一层数据，即路线
+							System.out.println("Key = " + entry.getKey());//显示是第几条路线及其总的花费
+							
+							//获取第二层数据，即包含了suggestmodel的map
+							JSONArray spotlist = JSONObject.parseArray(entry.getValue().toString());
+							
+							int days = 1;//遍历suggestmap，如果遇到key等于13的时候，说明天数要加1
+							System.out.println("第" + days + "天:");
+							System.out.println("上午:");
+							
+							
+//							System.out.println(spotlist.size());
+							for(int i = 0; i < spotlist.size(); ++i){
+//								System.out.println(spotlist.get(i));
+								//获取第三层数据，即suggestmodel
+								Map<String, Object> suggestMap = (Map<String, Object>) spotlist.get(i);
+								
+								for(Map.Entry<String, Object> entry2 : suggestMap.entrySet()){
+									
+//									System.out.println("Key = " + entry2.getKey() + ", Value = " + entry2.getValue());\\
+//									System.out.println("Key = " + entry2.getKey());
+									
+									
+									
+									//获取suggest中的各个model数据
+									JSONObject map_3 = JSONObject.parseObject(JSONObject.toJSONString(entry2.getValue()));
+									
+//									System.out.println("hotelModel:"+map_3.get("hotelModel"));
+//									System.out.println("restaurantModel:"+map_3.get("restaurantModel"));
+//									System.out.println("shopModel:"+map_3.get("shopModel"));
+//									System.out.println("spotModel:"+map_3.get("spotModel"));
+									
+									JSONObject map_hotel = JSONObject.parseObject(JSONObject.toJSONString(map_3.get("hotelModel")));
+									JSONObject map_restaurant = JSONObject.parseObject(JSONObject.toJSONString(map_3.get("restaurantModel")));
+									JSONObject map_shop = JSONObject.parseObject(JSONObject.toJSONString(map_3.get("shopModel")));
+									JSONObject map_spot = JSONObject.parseObject(JSONObject.toJSONString(map_3.get("spotModel")));
+									if(map_hotel != null){
+										System.out.println("entertainment_distance:" + map_hotel.get("entertainment_distance"));
+										System.out.println("spot_distance:" + map_hotel.get("spot_distance"));
+										System.out.println("hotelAddress:" + map_hotel.get("hotelAddress"));
+										System.out.println("hotelName:" + map_hotel.get("hotelName"));
+										System.out.println("ave_price:" + map_hotel.get("ave_price"));
+										System.out.println("hotelScore:" + map_hotel.get("hotelScore"));
+										System.out.println("hotelLevel:" + map_hotel.get("hotelLevel"));
+										System.out.println("hotelDescribe:" + map_hotel.get("hotelDescribe"));
+										System.out.println("\n");
+									}
+									if(map_restaurant != null){
+										mSearch1.geocode(new GeoCodeOption().city("丽江").address(map_restaurant.getString("restaurantName")));
+										System.out.println("restaurantScore:" + map_restaurant.get("restaurantScore"));
+										System.out.println("spot_distance:" + map_restaurant.get("spot_distance"));
+										System.out.println("restaurantDescribe:" + map_restaurant.get("restaurantDescribe"));
+										System.out.println("restaurantAddress:" + map_restaurant.get("restaurantAddress"));
+										System.out.println("restaurantName:" + map_restaurant.get("restaurantName"));
+										System.out.println("restaurantType:" + map_restaurant.get("restaurantType"));
+										System.out.println("agr_price:" + map_restaurant.get("agr_price"));
+										System.out.println("\n");
+									}
+									if(map_shop != null){
+										System.out.println("shopScore:" + map_shop.get("shopScore"));
+										System.out.println("shopDescribe:" + map_shop.get("shopDescribe"));
+										System.out.println("shopTime:" + map_shop.get("shopTime"));
+										System.out.println("shopName:" + map_shop.get("shopName"));
+										System.out.println("spot_distance:" + map_shop.get("spot_distance"));
+										System.out.println("shopType:" + map_shop.get("shopType"));
+										System.out.println("\n");
+									}
+									if(map_spot != null){
+										
+										System.out.println("spotSuggestTime:" + map_spot.get("spotSuggestTime"));
+										System.out.println("spotPrice:" + map_spot.get("spotPrice"));
+										System.out.println("spotScore:" + map_spot.get("spotScore"));
+										System.out.println("spotTime:" + map_spot.get("spotTime"));
+										System.out.println("spotDescribe:" + map_spot.get("spotDescribe"));
+										System.out.println("spotName:" + map_spot.get("spotName"));
+										System.out.println("\n");
+									}
+										
+//									HotelModel hotel = (HotelModel)map_3.get("hotelModel");
+									if(entry2.getKey().toString() == "13" && i != (spotlist.size() - 1)){
+										//出现13表明今天下午的景点等已经安排完了，天数需要+1
+										days++;
+										System.out.println("第" + days + "天:");
+										System.out.println("上午:");
+									
+									}else if(entry2.getKey().toString() == "12" && i != (spotlist.size() - 1)){
+										//出现12表明今天上午的景点等已经安排完了，变成下午的景点
+										System.out.println("下午:");
+									}
+									
+								}//for(Map.Entry<String, Object> entry2 : suggestMap.entrySet())
+							
+							System.out.println("\n\n");
+							
+								
+							}//for(int i = 0; i < spotlist.size(); ++i)
+						}//for(Map.Entry<String, Object> entry : jsmap.entrySet())
+						
+						
+						
+					/*=====================================================================================================*/
+					/*=====================================================================================================*/
+					/*=========================================解析完成 ====================================================*/
+					/*=====================================================================================================*/
+					/*=====================================================================================================*/
 					
 						
-					}//for(int i = 0; i < spotlist.size(); ++i)
-				}//for(Map.Entry<String, Object> entry : jsmap.entrySet())
 					
 					
 				}catch(Exception e){
@@ -369,7 +502,7 @@ class LoadData extends AsyncTask<String, String, String>{
 				}
 				
 			}else{
-				Toast.makeText(getApplicationContext(), "连接服务器失败，返回数据为空",Toast.LENGTH_LONG ).show();
+				Toast.makeText(getApplicationContext(), "连接服务器失败，返回数据为空 in Geo",Toast.LENGTH_LONG ).show();
 				
 			}
 			

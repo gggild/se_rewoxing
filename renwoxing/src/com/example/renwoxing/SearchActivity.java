@@ -136,7 +136,7 @@ public class SearchActivity extends Activity {
 					listViewLines.setAdapter(adapter);
 				} catch (Exception e) {
 					// TODO: handle exception
-					Toast.makeText(getApplicationContext(), "连接服务器失败，返回数据为空",Toast.LENGTH_LONG ).show();
+					Toast.makeText(getApplicationContext(), "连接服务器失败，返回数据为空 in Search",Toast.LENGTH_LONG ).show();
 				}
 				}
 			

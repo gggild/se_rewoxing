@@ -236,7 +236,7 @@ class LoadData extends AsyncTask<String, String, String>{
 					e.printStackTrace();
 				}
 			}else{
-				Toast.makeText(getApplicationContext(), "连接服务器失败，返回数据为空",Toast.LENGTH_LONG ).show();
+				Toast.makeText(getApplicationContext(), "连接服务器失败，返回数据为空 in Line",Toast.LENGTH_LONG ).show();
 			}
 //			progressDialog.dismiss();
 		}
